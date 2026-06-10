@@ -1,0 +1,46 @@
+---
+- name: Creer le reseau Docker
+  community.docker.docker_network:
+    name: "{{ docker_network }}"
+    state: present
+
+- name: Creer le repertoire du projet
+  file:
+    path: "{{ project_dir }}"
+    state: directory
+    mode: '0755'
+
+- name: Creer le volume PostgreSQL
+  community.docker.docker_volume:
+    name: "{{ project_name }}_pgdata"
+    state: present
+
+- name: Demarrer PostgreSQL
+  community.docker.docker_container:
+    name: "{{ postgresql_container_name }}"
+    image: "{{ postgresql_image }}"
+    state: started
+    restart_policy: unless-stopped
+    networks:
+      - name: "{{ docker_network }}"
+    volumes:
+      - "{{ project_name }}_pgdata:/var/lib/postgresql/data"
+    env:
+      POSTGRES_DB: "{{ postgresql_db }}"
+      POSTGRES_USER: "{{ postgresql_user }}"
+      POSTGRES_PASSWORD: "{{ postgresql_password }}"
+    labels:
+      projet: "{{ project_name }}"
+
+- name: Attendre que PostgreSQL soit pret
+  community.docker.docker_container_exec:
+    container: "{{ postgresql_container_name }}"
+    command: pg_isready -U {{ postgresql_user }} -d {{ postgresql_db }}
+  register: pg_ready
+  retries: 10
+  delay: 3
+  until: pg_ready.rc == 0
+
+- name: PostgreSQL OK
+  debug:
+    msg: "PostgreSQL pret sur le reseau {{ docker_network }}"

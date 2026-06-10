@@ -1,0 +1,19 @@
+---
+- name: "Deploiement Flask Todo"
+  hosts: local
+  become: true
+
+  roles:
+    - role: postgresql
+    - role: flask
+    - role: prometheus
+    - role: grafana
+
+  post_tasks:
+    - name: Resume
+      debug:
+        msg:
+          - "Deploiement termine !"
+          - "Application Flask -> http://localhost:{{ flask_port }}"
+#          - "Prometheus -> http://localhost:{{ prometheus_port }}"
+#          - "Grafana -> http://localhost:{{ grafana_port }}"

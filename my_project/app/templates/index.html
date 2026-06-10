@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Todo List</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="container">
+
+    <header>
+      <h1>Todo List</h1>
+      <p class="subtitle">{{ terminees }} / {{ total }} taches terminees</p>
+    </header>
+
+    <form action="/ajouter" method="POST" class="form-ajouter">
+      <input
+        type="text"
+        name="titre"
+        placeholder="Nouvelle tache..."
+        autocomplete="off"
+        required
+      >
+      <button type="submit">Ajouter</button>
+    </form>
+
+    <nav class="filtres">
+      <a href="/?filtre=toutes"    class="{{ 'actif' if filtre == 'toutes' }}">Toutes ({{ total }})</a>
+      <a href="/?filtre=actives"   class="{{ 'actif' if filtre == 'actives' }}">Actives</a>
+      <a href="/?filtre=terminees" class="{{ 'actif' if filtre == 'terminees' }}">Terminees</a>
+    </nav>
+
+    <ul class="todo-list">
+      {% for todo in todos %}
+      <li class="{{ 'fait' if todo.fait }}">
+        <a href="/terminer/{{ todo.id }}" class="checkbox" title="Marquer comme {{ 'active' if todo.fait else 'terminee' }}">
+          {% if todo.fait %}&#x2713;{% else %}&nbsp;{% endif %}
+        </a>
+        <span class="titre">{{ todo.titre }}</span>
+        <span class="date">{{ todo.created_at.strftime('%d/%m %H:%M') }}</span>
+        <a href="/supprimer/{{ todo.id }}" class="supprimer" onclick="return confirm('Supprimer cette tache ?')">&#x2715;</a>
+      </li>
+      {% else %}
+      <li class="vide">Aucune tache.</li>
+      {% endfor %}
+    </ul>
+
+    {% if terminees > 0 %}
+    <div class="actions">
+      <a href="/supprimer-terminees" onclick="return confirm('Supprimer toutes les taches terminees ?')">
+        Supprimer les taches terminees ({{ terminees }})
+      </a>
+    </div>
+    {% endif %}
+
+
+  </div>
+</body>
+</html>

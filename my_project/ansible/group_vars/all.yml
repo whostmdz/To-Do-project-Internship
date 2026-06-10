@@ -1,0 +1,24 @@
+project_name: "flask-todo"
+docker_network: "flask_network"
+project_dir: "/opt/flask-todo"
+
+# PostgreSQL
+postgresql_container_name: "todo_postgresql"
+postgresql_image: "postgres:15-alpine"
+postgresql_port: 5432
+postgresql_db: "tododb"
+postgresql_user: "todouser"
+postgresql_password: "todopass"
+
+# Flask
+flask_container_name: "todo_flask"
+flask_image: "todo_flask_img"
+flask_port: 5000
+
+# Prometheus
+prometheus_container_name: "todo_prometheus"
+prometheus_port: 9090
+
+# Grafana
+grafana_container_name: "todo_grafana"
+grafana_port: 3000

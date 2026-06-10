@@ -1,0 +1,18 @@
+---
+- name: Creer le volume Grafana
+  community.docker.docker_volume:
+    name: "{{ project_name }}_grafana_data"
+    state: present
+
+- name: Lancer le conteneur Grafana
+  community.docker.docker_container:
+    name: "{{ grafana_container_name }}"
+    image: "grafana/grafana"
+    state: started
+    restart_policy: unless-stopped
+    networks:
+      - name: "{{ docker_network }}"
+    ports:
+      - "3000:3000"
+    volumes:
+      - "{{ project_name }}_grafana_data:/var/lib/grafana"

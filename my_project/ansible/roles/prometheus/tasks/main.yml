@@ -1,0 +1,25 @@
+---
+- name: Creer le repertoire Prometheus
+  file:
+    path: "{{ project_dir }}/prometheus"
+    state: directory
+    mode: '0755'
+
+- name: Copier la configuration Prometheus
+  ansible.builtin.copy:
+    src: prometheus.yml
+    dest: "{{ project_dir }}/prometheus/prometheus.yml"
+    mode: "0644"
+
+- name: Lancer le conteneur Prometheus
+  community.docker.docker_container:
+    name: "{{ prometheus_container_name }}"
+    image: "prom/prometheus"
+    state: started
+    restart_policy: unless-stopped
+    networks:
+      - name: "{{ docker_network }}"
+    ports:
+      - "9090:9090"
+    volumes:
+      - "{{ project_dir }}/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml"

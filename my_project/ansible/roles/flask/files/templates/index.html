@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Todo List</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="container">
+
+    {% include "components/header.html" %}
+    {% include "components/ajouter.html" %}
+    {% include "components/filtres.html" %}
+    {% include "components/todo_list.html" %}
+    {% include "components/actions.html" %}
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,10 @@
+{% if terminees > 0 %}
+  <div class="actions">
+    <a
+      href="/supprimer-terminees"
+      onclick="return confirm('Supprimer toutes les taches terminees ?')"
+    >
+      Supprimer les taches terminees ({{ terminees }})
+    </a>
+  </div>
+{% endif %}

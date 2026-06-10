@@ -1,0 +1,65 @@
+---
+- name: Creer le repertoire de l'appli
+  file:
+    path: "{{ project_dir }}/app"
+    state: directory
+    mode: '0755'
+
+- name: Copier les fichiers de l'application
+  copy:
+    src: "{{ item }}"
+    dest: "{{ project_dir }}/app/{{ item }}"
+    mode: '0644'
+  loop:
+    - app.py
+    - requirements.txt
+    - Dockerfile
+
+- name: Copier les templates HTML
+  copy:
+    src: templates/
+    dest: "{{ project_dir }}/app/templates/"
+    mode: '0644'
+
+- name: Copier les fichiers statiques
+  copy:
+    src: static/
+    dest: "{{ project_dir }}/app/static/"
+    mode: '0644'
+
+- name: Builder l'image Flask
+  community.docker.docker_image:
+    name: "{{ flask_image }}"
+    build:
+      path: "{{ project_dir }}/app"
+    source: build
+    force_source: true
+
+- name: Demarrer le container Flask
+  community.docker.docker_container:
+    name: "{{ flask_container_name }}"
+    image: "{{ flask_image }}"
+    state: started
+    restart_policy: unless-stopped
+    ports:
+      - "{{ flask_port }}:5000"
+    networks:
+      - name: "{{ docker_network }}"
+    env:
+      DATABASE_URL: "postgresql://{{ postgresql_user }}:{{ postgresql_password }}@{{ postgresql_container_name }}:5432/{{ postgresql_db }}"
+      FLASK_ENV: "production"
+    labels:
+      projet: "{{ project_name }}"
+
+- name: Verifier que Flask repond
+  uri:
+    url: "http://localhost:{{ flask_port }}"
+    status_code: 200
+  register: flask_check
+  retries: 10
+  delay: 3
+  until: flask_check.status == 200
+
+- name: Flask OK
+  debug:
+    msg: "Application disponible sur http://localhost:{{ flask_port }}"

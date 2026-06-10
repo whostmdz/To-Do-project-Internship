@@ -1,0 +1,29 @@
+<ul class="todo-list">
+  {% for todo in todos %}
+    <li class="{{ 'fait' if todo.fait }}">
+      <a
+        href="/terminer/{{ todo.id }}"
+        class="checkbox"
+        title="Marquer comme {{ 'active' if todo.fait else 'terminee' }}"
+      >
+        {% if todo.fait %}&#x2713;{% else %}&nbsp;{% endif %}
+      </a>
+
+      <span class="titre">{{ todo.titre }}</span>
+
+      <span class="date">
+        {{ todo.created_at.strftime('%d/%m %H:%M') }}
+      </span>
+
+      <a
+        href="/supprimer/{{ todo.id }}"
+        class="supprimer"
+        onclick="return confirm('Supprimer cette tache ?')"
+      >
+        &#x2715;
+      </a>
+    </li>
+  {% else %}
+    <li class="vide">Aucune tache.</li>
+  {% endfor %}
+</ul>
